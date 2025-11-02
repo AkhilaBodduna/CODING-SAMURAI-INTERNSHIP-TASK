@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVerse Tech - Where Innovation Meets Lifestyle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(236, 72, 153, 0.8); }
+    }
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .gradient-text {
+      background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const PRODUCTS = [
+      // LAPTOPS - All verified working images
+      {id:1,cat:"Laptops",name:"MacBook Air M2",price:114999,img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=700&q=80",desc:"Apple M2 chip | 13.6\" Retina Display | 512GB SSD",badge:"Premium",brand:"Apple"},
+      {id:2,cat:"Laptops",name:"HP Pavilion 14",price:65999,img:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=700&q=80",desc:"Intel i5 11th Gen | 8GB RAM | 512GB SSD",badge:"Bestseller",brand:"HP"},
+      {id:3,cat:"Laptops",name:"Asus ROG Zephyrus G15",price:134999,img:"https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=700&q=80",desc:"Ryzen 9 | RTX 4070 | 165Hz Display",badge:"Gaming",brand:"Asus"},
+      {id:20,cat:"Laptops",name:"Lenovo IdeaPad 5",price:55999,img:"https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=700&q=80",desc:"Ryzen 5 | 16GB RAM | 512GB SSD",badge:"Hot Deal",brand:"Lenovo"},
+      {id:21,cat:"Laptops",name:"Dell XPS 13",price:125999,img:"https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=700&q=80",desc:"Intel i7 | 16GB RAM | 1TB SSD",badge:"Premium",brand:"Dell"},
+      
+      // CAMERAS - All verified working images
+      {id:4,cat:"Cameras",name:"Canon EOS 90D",price:84999,img:"https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=700&q=80",desc:"24MP DSLR | 4K Video | WiFi",badge:"Hot Deal",brand:"Canon"},
+      {id:5,cat:"Cameras",name:"Sony Alpha a7 IV",price:189999,img:"https://images.unsplash.com/photo-1606980762034-c658e4468d1e?w=700&q=80",desc:"33MP Mirrorless | 4K 60fps",badge:"Premium",brand:"Sony"},
+      {id:22,cat:"Cameras",name:"Nikon D7500",price:94999,img:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=700&q=80",desc:"20.9MP | 4K UHD | 51-Point AF",badge:"Bestseller",brand:"Nikon"},
+      
+      // AUDIO - All verified working images
+      {id:6,cat:"Audio",name:"Sony WH-1000XM5",price:29990,img:"https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=700&q=80",desc:"Noise Cancelling | Bluetooth 5.2",badge:"Bestseller",brand:"Sony"},
+      {id:7,cat:"Audio",name:"JBL Go 3",price:2999,img:"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=700&q=80",desc:"Portable | IP67 Waterproof",badge:"Budget",brand:"JBL"},
+      {id:8,cat:"Audio",name:"Bose SoundLink Flex",price:10990,img:"https://images.unsplash.com/photo-1545127398-14699f92334b?w=700&q=80",desc:"Wireless Bluetooth | Deep Bass",badge:"New",brand:"Bose"},
+      {id:18,cat:"Audio",name:"Boat Airdopes 441",price:1999,img:"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=700&q=80",desc:"TWS Earbuds | IPX7",badge:"Budget",brand:"Boat"},
+      {id:24,cat:"Audio",name:"Apple AirPods Pro",price:24999,img:"https://images.unsplash.com/photo-1606220838315-056192d5e927?w=700&q=80",desc:"Active Noise Cancellation | H2 Chip",badge:"Premium",brand:"Apple"},
+      
+      // SMART WATCHES - All verified working images
+      {id:9,cat:"Smart Watches",name:"Apple Watch Series 9",price:41999,img:"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=700&q=80",desc:"Always-on Retina | Fitness Track",badge:"Premium",brand:"Apple"},
+      {id:10,cat:"Smart Watches",name:"Amazfit GTR 4",price:17999,img:"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=700&q=80",desc:"1.43\" AMOLED | GPS | SpO₂",badge:"Hot Deal",brand:"Amazfit"},
+      {id:26,cat:"Smart Watches",name:"Samsung Galaxy Watch 6",price:28999,img:"https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=700&q=80",desc:"Advanced Sleep | Body Composition",badge:"Bestseller",brand:"Samsung"},
+      
+      // PHONES - All verified working images
+      {id:11,cat:"Phones",name:"iPhone 15 Pro",price:134999,img:"https://images.unsplash.com/photo-1592286927505-4fa9665ff5c2?w=700&q=80",desc:"A17 Pro | 48MP | Titanium",badge:"Premium",brand:"Apple"},
+      {id:12,cat:"Phones",name:"Samsung Galaxy S24",price:94999,img:"https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=700&q=80",desc:"Dynamic AMOLED | 200MP Camera",badge:"Bestseller",brand:"Samsung"},
+      {id:13,cat:"Phones",name:"OnePlus 12",price:64999,img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700&q=80",desc:"Snapdragon 8 Gen 3 | 120Hz",badge:"New",brand:"OnePlus"},
+      {id:28,cat:"Phones",name:"Google Pixel 8 Pro",price:89999,img:"https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=700&q=80",desc:"Tensor G3 | Best Camera",badge:"Premium",brand:"Google"},
+      {id:29,cat:"Phones",name:"Xiaomi 14 Pro",price:69999,img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700&q=80",desc:"Snapdragon 8 Gen 3 | Leica",badge:"Hot Deal",brand:"Xiaomi"},
+      {id:30,cat:"Phones",name:"Oppo Find X6 Pro",price:79999,img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700&q=80",desc:"Hasselblad Camera | 100W Charge",badge:"New",brand:"Oppo"},
+      {id:31,cat:"Phones",name:"Vivo X90 Pro",price:74999,img:"https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=700&q=80",desc:"Dimensity 9200 | Zeiss Optics",badge:"Bestseller",brand:"Vivo"},
+      
+      // TVs - All verified working images
+      {id:16,cat:"TVs",name:"Samsung QLED 55\"",price:79499,img:"https://images.unsplash.com/photo-1593359677879-a204dced410f?w=700&q=80",desc:"4K Smart TV | Quantum HDR",badge:"Premium",brand:"Samsung"},
+      {id:17,cat:"TVs",name:"LG OLED C3 48\"",price:109999,img:"https://images.unsplash.com/photo-1593784991095-a205069470b6?w=700&q=80",desc:"4K OLED | Dolby Vision | 120Hz",badge:"Premium",brand:"LG"},
+      {id:32,cat:"TVs",name:"Sony Bravia X90L 55\"",price:99999,img:"https://images.unsplash.com/photo-1593359677879-a204dced410f?w=700&q=80",desc:"Full Array LED | Google TV",badge:"Bestseller",brand:"Sony"},
+      
+      // ACCESSORIES - All verified working images
+      {id:14,cat:"Accessories",name:"Logitech MX Master 3S",price:8999,img:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=700&q=80",desc:"Wireless Mouse | Ergonomic",badge:"Bestseller",brand:"Logitech"},
+      {id:15,cat:"Accessories",name:"Seagate 1TB SSD",price:9999,img:"https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=700&q=80",desc:"USB-C Portable | 540MB/s",badge:"Hot Deal",brand:"Seagate"},
+      {id:19,cat:"Accessories",name:"Anker Power Bank 20000mAh",price:3499,img:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=700&q=80",desc:"Fast Charging | Dual Ports",badge:"Bestseller",brand:"Anker"},
+      {id:34,cat:"Accessories",name:"Apple Magic Keyboard",price:12999,img:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=700&q=80",desc:"Wireless | Rechargeable",badge:"Premium",brand:"Apple"},
+    ];
+
+    const QUOTES = ["✨ Innovation at Your Fingertips","🚀 Where Technology Meets Lifestyle","💎 Premium Quality, Unbeatable Prices","🎯 Your Tech Dreams, Our Mission","⚡ Fast, Reliable, Revolutionary"];
+
+    const HeroBanner = () => {
+      const [quoteIndex, setQuoteIndex] = useState(0);
+      useEffect(() => {
+        const interval = setInterval(() => setQuoteIndex(prev => (prev + 1) % QUOTES.length), 3000);
+        return () => clearInterval(interval);
+      }, []);
+      return (
+        <div className="relative bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 text-white py-20 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <h1 className="text-5xl md:text-7xl font-extrabold mb-4 float-animation">Welcome to AVerse Tech</h1>
+            <p className="text-2xl md:text-3xl font-light mb-6 transition-all duration-500">{QUOTES[quoteIndex]}</p>
+            <p className="text-lg opacity-90 max-w-2xl mx-auto">"Shop smarter, live better. Your one-stop destination for cutting-edge technology."</p>
+            <div className="mt-8 flex gap-4 justify-center flex-wrap">
+              <span className="px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm">🎁 Free Shipping</span>
+              <span className="px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm">🔒 Secure Payment</span>
+              <span className="px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm">⚡ Fast Delivery</span>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const Navbar = ({count,onCartClick,search,setSearch}) => (
+      <header className="bg-white shadow-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative pulse-glow">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ec4899" />
+                    <stop offset="50%" stopColor="#a855f7" />
+                    <stop offset="100%" stopColor="#f97316" />
+                  </linearGradient>
+                </defs>
+                <rect width="60" height="60" rx="15" fill="url(#logoGradient)" />
+                <text x="30" y="40" fontFamily="Arial Black" fontSize="28" fontWeight="900" fill="white" textAnchor="middle">AV</text>
+                <circle cx="50" cy="50" r="6" fill="#10b981" stroke="white" strokeWidth="2" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold gradient-text leading-none">AVerse Tech</h1>
+              <p className="text-xs text-gray-500 font-semibold">🚀 Innovation Hub</p>
+            </div>
+          </div>
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products, brands..." className="w-full border-2 border-pink-200 rounded-full px-4 py-2 pl-10 text-sm focus:ring-2 focus:ring-pink-400 focus:border-transparent"/>
+              <span className="absolute left-3 top-2.5">🔍</span>
+            </div>
+          </div>
+          <button onClick={onCartClick} className="relative bg-gradient-to-r from-pink-500 to-orange-500 text-white rounded-full px-6 py-2 font-semibold hover:shadow-lg transition transform hover:scale-105">
+            🛒 Cart
+            {count>0&&<span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold animate-bounce">{count}</span>}
+          </button>
+        </div>
+      </header>
+    );
+
+    const Categories = ({current,setCat}) => {
+      const cats = [...new Set(PRODUCTS.map(p=>p.cat))];
+      return (
+        <div className="bg-white border-b sticky top-[88px] z-40 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-3 justify-center">
+            {["All",...cats].map(c=>(
+              <button key={c} onClick={()=>setCat(c==="All"?"":c)} className={`px-5 py-2 rounded-full font-semibold transition transform hover:scale-105 ${current===(c==="All"?"":c)?"bg-gradient-to-r from-pink-500 to-orange-500 text-white shadow-lg":"bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>{c}</button>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const ProductCard = ({p,show}) => {
+      const badgeColors = {Premium:"bg-purple-500",Bestseller:"bg-green-500","Hot Deal":"bg-red-500",New:"bg-blue-500",Gaming:"bg-indigo-500",Budget:"bg-yellow-500"};
+      return (
+        <div className="bg-white rounded-2xl shadow-md hover:shadow-2xl overflow-hidden transition transform hover:-translate-y-2 cursor-pointer group" onClick={()=>show(p)}>
+          <div className="relative overflow-hidden">
+            <img src={p.img} alt={p.name} className="h-52 w-full object-cover group-hover:scale-110 transition-transform duration-500"/>
+            <div className={`absolute top-3 right-3 ${badgeColors[p.badge]} text-white text-xs font-bold px-3 py-1 rounded-full`}>{p.badge}</div>
+            <div className="absolute top-3 left-3 bg-black/70 text-white text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">{p.brand}</div>
+          </div>
+          <div className="p-4">
+            <h3 className="font-bold text-lg mb-1 text-gray-800">{p.name}</h3>
+            <p className="text-sm text-gray-500 mb-2 line-clamp-1">{p.desc}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-pink-600 font-bold text-xl">₹{p.price.toLocaleString("en-IN")}</p>
+              <button className="bg-pink-500 text-white text-sm px-4 py-1.5 rounded-full hover:bg-pink-600">View</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const Modal = ({prod,onClose,onAdd}) => {
+      if (!prod) return null;
+      return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={onClose}>
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 relative" onClick={e=>e.stopPropagation()}>
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl">×</button>
+            <div className="grid md:grid-cols-2 gap-6">
+              <img src={prod.img} alt={prod.name} className="w-full h-72 object-cover rounded-2xl"/>
+              <div className="flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">{prod.brand}</span>
+                    <span className="bg-pink-100 text-pink-600 text-xs font-semibold px-3 py-1 rounded-full">{prod.badge}</span>
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 text-gray-800">{prod.name}</h2>
+                  <p className="text-gray-600 mb-4">{prod.desc}</p>
+                  <span className="text-yellow-500 text-lg">★★★★★</span>
+                </div>
+                <div>
+                  <p className="text-4xl font-bold text-pink-600 mb-6">₹{prod.price.toLocaleString("en-IN")}</p>
+                  <button onClick={()=>{onAdd(prod);onClose();}} className="w-full bg-gradient-to-r from-pink-500 to-orange-500 text-white py-4 rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">🛒 Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const CartDrawer = ({open,cart,close,updateQty,remove}) => {
+      const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+      const savings = cart.reduce((s,i)=>s+(i.price*0.1*i.qty),0);
+      return (
+        <>
+          {open && <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" onClick={close}></div>}
+          <div className={`fixed top-0 right-0 w-96 h-full bg-white shadow-2xl transform transition-transform duration-300 z-50 ${open?"translate-x-0":"translate-x-full"}`}>
+            <div className="p-6 border-b bg-gradient-to-r from-pink-500 to-orange-500 text-white">
+              <div className="flex justify-between items-center">
+                <div><h2 className="font-bold text-2xl">Your Cart</h2><p className="text-sm opacity-90">{cart.length} items</p></div>
+                <button onClick={close} className="text-3xl hover:rotate-90 transition-transform">×</button>
+              </div>
+            </div>
+            <div className="p-4 overflow-y-auto h-[calc(100%-280px)]">
+              {cart.length===0?<div className="text-center mt-20"><div className="text-6xl mb-4">🛒</div><p className="text-gray-500 font-semibold">Your cart is empty</p></div>:
+              cart.map(it=>(
+                <div key={it.id} className="flex gap-4 py-4 border-b hover:bg-gray-50 rounded-lg px-2">
+                  <img src={it.img} alt={it.name} className="w-20 h-20 rounded-lg object-cover shadow"/>
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm">{it.name}</div>
+                    <div className="text-xs text-gray-500">{it.brand}</div>
+                    <div className="text-xs text-pink-600 font-bold mt-1">₹{it.price.toLocaleString("en-IN")}</div>
+                    <div className="flex items-center gap-3 mt-2">
+                      <button onClick={()=>updateQty(it.id,it.qty-1)} className="w-7 h-7 border-2 rounded-full hover:bg-pink-500 hover:text-white transition font-bold">-</button>
+                      <span className="font-bold">{it.qty}</span>
+                      <button onClick={()=>updateQty(it.id,it.qty+1)} className="w-7 h-7 border-2 rounded-full hover:bg-pink-500 hover:text-white transition font-bold">+</button>
+                      <button onClick={()=>remove(it.id)} className="ml-auto text-xs text-red-500 hover:text-red-700 font-semibold">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {cart.length > 0 && (
+              <div className="p-6 border-t bg-gray-50">
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-sm"><span>Subtotal</span><span className="font-semibold">₹{total.toLocaleString("en-IN")}</span></div>
+                  <div className="flex justify-between text-sm text-green-600"><span>You Save</span><span className="font-semibold">-₹{savings.toLocaleString("en-IN")}</span></div>
+                  <div className="flex justify-between text-lg font-bold pt-2 border-t"><span>Total</span><span className="text-pink-600">₹{(total-savings).toLocaleString("en-IN")}</span></div>
+                </div>
+                <button className="w-full bg-gradient-to-r from-pink-500 to-orange-500 text-white py-4 rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">Checkout Now 🚀</button>
+              </div>
+            )}
+          </div>
+        </>
+      );
+    };
+
+    function App() {
+      const [cart,setCart] = useState([]);
+      const [open,setOpen] = useState(false);
+      const [search,setSearch] = useState("");
+      const [cat,setCat] = useState("");
+      const [modal,setModal] = useState(null);
+
+      const add = p => setCart(prev => {
+        const f = prev.find(i=>i.id===p.id);
+        if (f) return prev.map(i=>i.id===p.id?{...i,qty:i.qty+1}:i);
+        return [...prev,{...p,qty:1}];
+      });
+      const updateQty = (id,q) => q < 1 ? remove(id) : setCart(prev=>prev.map(i=>i.id===id?{...i,qty:q}:i));
+      const remove = id => setCart(prev=>prev.filter(i=>i.id!==id));
+
+      const filtered = PRODUCTS.filter(p=>
+        (!cat||p.cat===cat) && (p.name.toLowerCase().includes(search.toLowerCase()) || p.brand.toLowerCase().includes(search.toLowerCase()) || p.cat.toLowerCase().includes(search.toLowerCase()))
+      );
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-orange-50">
+          <Navbar count={cart.reduce((s,i)=>s+i.qty,0)} onCartClick={()=>setOpen(true)} search={search} setSearch={setSearch}/>
+          <HeroBanner />
+          <Categories current={cat} setCat={setCat}/>
+          <main className="max-w-7xl mx-auto px-4 py-10 pb-20">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold gradient-text">{cat||"All Products"} Collection</h2>
+              <p className="text-gray-500">{filtered.length} products</p>
+            </div>
+            {filtered.length===0?<div className="text-center mt-20"><div className="text-8xl mb-4">🔍</div><p className="text-gray-500 text-xl font-semibold">No products found</p></div>:
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">{filtered.map(p=><ProductCard key={p.id} p={p} show={setModal}/>)}</div>}
+          </main>
+          <CartDrawer open={open} cart={cart} close={()=>setOpen(false)} updateQty={updateQty} remove={remove}/>
+          <Modal prod={modal} onClose={()=>setModal(null)} onAdd={add}/>
+          <footer className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 mt-20">
+            <div className="max-w-7xl mx-auto px-4 text-center">
+              <h3 className="text-3xl font-bold mb-4 gradient-text">AVerse Tech</h3>
+              <p className="text-gray-400 mb-6">"Your satisfaction is our priority. Shop with confidence, explore the AVerse."</p>
+              <div className="flex justify-center gap-6 mb-6 flex-wrap">
+                <span className="text-gray-400">📧 support@aversetech.com</span>
+                <span className="text-gray-400">📞 +91 1800-AV-TECH</span>
+              </div>
+              <div className="border-t border-gray-700 pt-6 mt-6"><p className="text-gray-500 text-sm">© 2025 AVerse Tech – Crafted with ❤ for tech enthusiasts</p></div>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
